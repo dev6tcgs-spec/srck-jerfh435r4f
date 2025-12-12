@@ -808,10 +808,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             count = len(collected_pav_facts)
             total = len(pav_facts)
             
-                facts_progress = create_progress_bar(count, total)
-                
-                if count == 0:
-                    text = f"""📚 *Факты:* {pav['emoji']} {pav['name']}
+            facts_progress = create_progress_bar(count, total)
+            
+            if count == 0:
+                text = f"""📚 *Факты:* {pav['emoji']} {pav['name']}
 
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -822,8 +822,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 💡 Пока нет собранных фактов.
 ✨ Выполняй задания в этом павильоне!"""
-                else:
-                    text = f"""📚 *Факты:* {pav['emoji']} {pav['name']}
+            else:
+                text = f"""📚 *Факты:* {pav['emoji']} {pav['name']}
 
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -833,10 +833,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 ━━━━━━━━━━━━━━━━━━━━
 
 """
-                    for i, fact in enumerate(collected_pav_facts, 1):
-                        text += f"💡 *Факт {i}:*\n\"{fact['text']}\"\n\n"
-                        if i < len(collected_pav_facts):
-                            text += "━━━━━━━━━━━━━━━━━━━━\n\n"
+                for i, fact in enumerate(collected_pav_facts, 1):
+                    text += f"💡 *Факт {i}:*\n\"{fact['text']}\"\n\n"
+                    if i < len(collected_pav_facts):
+                        text += "━━━━━━━━━━━━━━━━━━━━\n\n"
             
             keyboard = [[InlineKeyboardButton("⬅️ К павильонам", callback_data="facts_menu")]]
             
