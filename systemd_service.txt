@@ -1,0 +1,42 @@
+# Инструкция по созданию systemd сервиса для автозапуска бота
+
+# 1. Создайте файл сервиса:
+# sudo nano /etc/systemd/system/winter-fair-bot.service
+
+# 2. Вставьте следующее содержимое (ЗАМЕНИТЕ пути!):
+
+[Unit]
+Description=Moscow Winter Fair Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=your_username  # ЗАМЕНИТЕ на ваше имя пользователя
+WorkingDirectory=/path/to/zimamos  # ЗАМЕНИТЕ на путь к проекту
+Environment="PATH=/usr/bin:/usr/local/bin"
+ExecStart=/usr/bin/python3 /path/to/zimamos/bot.py  # ЗАМЕНИТЕ путь
+Restart=always
+RestartSec=10
+StandardOutput=append:/path/to/zimamos/logs/bot_stdout.log
+StandardError=append:/path/to/zimamos/logs/bot_stderr.log
+
+[Install]
+WantedBy=multi-user.target
+
+# 3. Перезагрузите systemd:
+# sudo systemctl daemon-reload
+
+# 4. Включите автозапуск:
+# sudo systemctl enable winter-fair-bot.service
+
+# 5. Запустите сервис:
+# sudo systemctl start winter-fair-bot.service
+
+# 6. Проверьте статус:
+# sudo systemctl status winter-fair-bot.service
+
+# 7. Полезные команды:
+# sudo systemctl stop winter-fair-bot.service    # Остановить
+# sudo systemctl restart winter-fair-bot.service # Перезапустить
+# sudo systemctl logs -f winter-fair-bot.service  # Смотреть логи в реальном времени
+
