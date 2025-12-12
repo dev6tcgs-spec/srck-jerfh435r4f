@@ -76,9 +76,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         action = data[0]
         log_info(f"Button action: {action}", {"user_id": query.from_user.id, "data": query.data})
-    
-    # ГЛАВНОЕ МЕНЮ
-    if action == "menu":
+        
+        # ГЛАВНОЕ МЕНЮ
+        if action == "menu":
         user_id = query.from_user.id
         user_coins = await database.get_user_coins(user_id)
         open_pavilions = await database.get_open_pavilions(user_id)
@@ -106,9 +106,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # КАРТА ЯРМАРКИ
-    elif action == "map":
+        
+        # КАРТА ЯРМАРКИ
+        elif action == "map":
         user_id = query.from_user.id
         user_coins = await database.get_user_coins(user_id)
         pavilions = await database.get_all_pavilions()
@@ -146,9 +146,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.answer("❌ Произошла ошибка. Попробуйте позже.", show_alert=True)
         except:
             pass
-    
-    # ПРОСМОТР ЗАКРЫТОГО ПАВИЛЬОНА
-    elif action == "pav_view":
+        
+        # ПРОСМОТР ЗАКРЫТОГО ПАВИЛЬОНА
+        elif action == "pav_view":
         pav_id = int(data[1])
         pav = await database.get_pavilion(pav_id)
         user_id = query.from_user.id
@@ -185,9 +185,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # ПОКУПКА ПАВИЛЬОНА
-    elif action == "pav_buy":
+        
+        # ПОКУПКА ПАВИЛЬОНА
+        elif action == "pav_buy":
         if len(data) < 2:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -230,9 +230,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # ВХОД В ПАВИЛЬОН
-    elif action == "pav_enter":
+        
+        # ВХОД В ПАВИЛЬОН
+        elif action == "pav_enter":
         if len(data) < 2:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -278,9 +278,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # НАЧАЛО ЗАДАНИЯ
-    elif action == "task_start":
+        
+        # НАЧАЛО ЗАДАНИЯ
+        elif action == "task_start":
         if len(data) < 3:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -305,9 +305,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await tasks_handler.start_choice_task(query, pav_id, task_id, context)
         elif task['type'] == 'sequence':
             await tasks_handler.start_sequence_task(query, pav_id, task_id, context)
-    
-    # РЕАКЦИЯ НА ЗАДАНИЕ - ожидание
-    elif action == "task_reaction_wait":
+        
+        # РЕАКЦИЯ НА ЗАДАНИЕ - ожидание
+        elif action == "task_reaction_wait":
         if len(data) < 2:
             return
         try:
@@ -315,9 +315,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except (ValueError, IndexError):
             return
         await query.answer("⏳ Подожди...", show_alert=False)
-    
-    # РЕАКЦИЯ НА ЗАДАНИЕ - нажатие
-    elif action == "task_reaction_hit":
+        
+        # РЕАКЦИЯ НА ЗАДАНИЕ - нажатие
+        elif action == "task_reaction_hit":
         task_id = int(data[1])
         state_key = f"{query.from_user.id}:{task_id}"
         
@@ -341,9 +341,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     InlineKeyboardButton("⬅️ Назад", callback_data=f"pav_enter:{pav_id}")
                 ]])
             )
-    
-    # ВЫБОР В ЗАДАНИИ
-    elif action == "task_choice":
+        
+        # ВЫБОР В ЗАДАНИИ
+        elif action == "task_choice":
         if len(data) < 2:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -461,9 +461,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         else:
             await complete_task(query, task_id)
-    
-    # ПОСЛЕДОВАТЕЛЬНОСТЬ В ЗАДАНИИ
-    elif action == "task_sequence":
+        
+        # ПОСЛЕДОВАТЕЛЬНОСТЬ В ЗАДАНИИ
+        elif action == "task_sequence":
         if len(data) < 3:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -581,9 +581,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         else:
             await complete_task(query, task_id)
-    
-    # ОТМЕНА ЗАДАНИЯ
-    elif action == "task_cancel":
+        
+        # ОТМЕНА ЗАДАНИЯ
+        elif action == "task_cancel":
         if len(data) < 2:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -602,14 +602,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton("⬅️ Назад в павильон", callback_data=f"pav_enter:{pav_id}")
             ]])
         )
-    
-    # ЗАВЕРШЕНИЕ ЗАДАНИЯ
-    elif action == "task_done":
+        
+        # ЗАВЕРШЕНИЕ ЗАДАНИЯ
+        elif action == "task_done":
         task_id = int(data[1])
         await complete_task(query, task_id)
-    
-    # ПОКАЗ ФАКТА
-    elif action == "fact":
+        
+        # ПОКАЗ ФАКТА
+        elif action == "fact":
         if len(data) < 3:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -644,9 +644,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # КОЛЛЕКЦИЯ
-    elif action == "collection":
+        
+        # КОЛЛЕКЦИЯ
+        elif action == "collection":
         user_id = query.from_user.id
         collected_facts = await database.get_collected_facts(user_id)
         facts_count = len(collected_facts)
@@ -669,9 +669,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # МЕНЮ ФАКТОВ
-    elif action == "facts_menu":
+        
+        # МЕНЮ ФАКТОВ
+        elif action == "facts_menu":
         user_id = query.from_user.id
         collected_facts = await database.get_collected_facts(user_id)
         pavilions = await database.get_all_pavilions()
@@ -701,9 +701,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # ФАКТЫ ПАВИЛЬОНА
-    elif action == "facts_pav":
+        
+        # ФАКТЫ ПАВИЛЬОНА
+        elif action == "facts_pav":
         if len(data) < 2:
             await query.answer("❌ Ошибка данных", show_alert=True)
             return
@@ -740,9 +740,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=text,
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    
-    # СТАТИСТИКА
-    elif action == "stats":
+        
+        # СТАТИСТИКА
+        elif action == "stats":
         user_id = query.from_user.id
         stats = await database.get_user_stats(user_id)
         open_pavilions = await database.get_open_pavilions(user_id)
