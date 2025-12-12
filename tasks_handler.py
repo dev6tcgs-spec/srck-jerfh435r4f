@@ -88,22 +88,25 @@ async def start_reaction_task(query, pavilion_id: int, task_id: int, context: Co
 
 async def show_thermometer_task(query, context: ContextTypes.DEFAULT_TYPE):
     """Задание: Проверить термометр"""
-    text = """🌡 Проверить термометр
+    text = """🌡 *Проверить термометр*
 
-Клиент спрашивает, комфортная ли температура в павильоне.
+━━━━━━━━━━━━━━━━━━━━
 
-Следи за термометром! 🌡️
+👤 Клиент спрашивает, комфортная ли температура в павильоне.
 
-━━━━━━━━━━━━━━━━
+💡 *Следи за термометром внимательно!* 🌡️
 
-Температура: 15°C...
-Холодно! ❄️"""
+━━━━━━━━━━━━━━━━━━━━
+
+🌡 *Температура:* 15°C...
+❄️ *Холодно!*"""
     
     keyboard = [[InlineKeyboardButton("⏳ Подождать...", callback_data=f"task_reaction_wait:3")]]
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     # Запускаем таймер
@@ -115,10 +118,14 @@ async def show_thermometer_task(query, context: ContextTypes.DEFAULT_TYPE):
     # Через 2 секунды обновляем
     await asyncio.sleep(2)
     if state_key in task_states and not task_states[state_key].get("ready", False):
-        text = """🌡 Проверить термометр
+        text = """🌡 *Проверить термометр*
 
-Температура: 25°C...
-Ещё прохладно... 😐"""
+━━━━━━━━━━━━━━━━━━━━
+
+🌡 *Температура:* 25°C...
+😐 *Ещё прохладно...*
+
+⏳ *Подожди ещё немного...*"""
         
         keyboard = [[InlineKeyboardButton("⏳ Ещё рано...", callback_data=f"task_reaction_wait:3")]]
         
@@ -133,11 +140,17 @@ async def show_thermometer_task(query, context: ContextTypes.DEFAULT_TYPE):
         # Ещё через 2 секунды - момент нажатия
         await asyncio.sleep(2)
         if state_key in task_states:
-            text = """🌡 Проверить термометр
+            text = """🌡 *Проверить термометр*
 
-Температура: 22°C... ✅
+━━━━━━━━━━━━━━━━━━━━
 
-⚡ СЕЙЧАС! Комфортная температура!"""
+🌡 *Температура:* 22°C... ✅
+
+━━━━━━━━━━━━━━━━━━━━
+
+⚡ *СЕЙЧАС!* Комфортная температура!
+
+💡 *Нажми кнопку в нужный момент!*"""
             
             keyboard = [
                 [InlineKeyboardButton("✅ НАЖАТЬ!", callback_data=f"task_reaction_hit:3")],
@@ -170,7 +183,8 @@ async def show_tea_heating_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:38"
@@ -231,7 +245,8 @@ async def show_cash_register_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:6"
@@ -290,7 +305,8 @@ async def show_espresso_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:16"
@@ -349,7 +365,8 @@ async def show_cocoa_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:17"
@@ -408,7 +425,8 @@ async def show_waffle_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:18"
@@ -467,7 +485,8 @@ async def show_milk_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:20"
@@ -526,7 +545,8 @@ async def show_garland_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:23"
@@ -585,7 +605,8 @@ async def show_snowball_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:27"
@@ -644,7 +665,8 @@ async def show_scale_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:30"
@@ -703,7 +725,8 @@ async def show_oven_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:33"
@@ -762,7 +785,8 @@ async def show_boiling_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:40"
@@ -821,7 +845,8 @@ async def show_brew_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:43"
@@ -880,7 +905,8 @@ async def show_fabric_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:10"
@@ -922,7 +948,8 @@ async def show_pack_bag_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:12"
@@ -970,7 +997,8 @@ async def show_straw_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     # Устанавливаем ready сразу, так как это простое задание без таймера
@@ -990,7 +1018,8 @@ async def show_tie_ribbon_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:35"
@@ -1032,7 +1061,8 @@ async def show_close_box_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:37"
@@ -1080,7 +1110,8 @@ async def show_add_branch_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     # Устанавливаем ready сразу, так как это простое задание без таймера
@@ -1100,7 +1131,8 @@ async def show_cut_ribbon_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:52"
@@ -1142,7 +1174,8 @@ async def show_stop_conveyor_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:55"
@@ -1190,7 +1223,8 @@ async def show_sprinkle_snow_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     # Устанавливаем ready сразу, так как это простое задание без таймера
@@ -1210,7 +1244,8 @@ async def show_measure_ribbon_task(query, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     state_key = f"{query.from_user.id}:58"
@@ -1272,7 +1307,8 @@ async def show_generic_reaction_task(query, task, context: ContextTypes.DEFAULT_
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def start_choice_task(query, pavilion_id: int, task_id: int, context: ContextTypes.DEFAULT_TYPE):
@@ -1357,7 +1393,8 @@ async def show_gloves_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_size_choice(query):
@@ -1382,7 +1419,8 @@ async def show_size_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_icecream_choice(query):
@@ -1409,7 +1447,8 @@ async def show_icecream_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_topping_choice(query):
@@ -1432,7 +1471,8 @@ async def show_topping_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_balls_choice(query):
@@ -1455,7 +1495,8 @@ async def show_balls_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_candles_choice(query):
@@ -1477,7 +1518,8 @@ async def show_candles_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_cookies_choice(query):
@@ -1499,7 +1541,8 @@ async def show_cookies_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_jam_choice(query):
@@ -1521,7 +1564,8 @@ async def show_jam_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_cookie_decor_choice(query):
@@ -1543,7 +1587,8 @@ async def show_cookie_decor_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_tea_type_choice(query):
@@ -1565,7 +1610,8 @@ async def show_tea_type_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_tea_set_choice(query):
@@ -1587,7 +1633,8 @@ async def show_tea_set_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_tea_jam_choice(query):
@@ -1610,7 +1657,8 @@ async def show_tea_jam_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_rare_tea_choice(query):
@@ -1632,7 +1680,8 @@ async def show_rare_tea_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_wrap_paper_choice(query):
@@ -1655,7 +1704,8 @@ async def show_wrap_paper_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_wish_choice(query):
@@ -1677,7 +1727,8 @@ async def show_wish_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_decor_choice(query):
@@ -1714,7 +1765,8 @@ async def show_decor_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_card_choice(query):
@@ -1736,7 +1788,8 @@ async def show_card_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_final_touch_choice(query):
@@ -1758,7 +1811,8 @@ async def show_final_touch_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_sweaters_choice(query):
@@ -1782,7 +1836,8 @@ async def show_sweaters_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_clothing_size_choice(query):
@@ -1807,7 +1862,8 @@ async def show_clothing_size_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_hat_choice(query):
@@ -1829,7 +1885,8 @@ async def show_hat_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_color_scheme_choice(query):
@@ -1868,7 +1925,8 @@ async def show_color_scheme_choice(query):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_generic_choice_task(query, task):
@@ -1887,7 +1945,8 @@ async def show_generic_choice_task(query, task):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def start_sequence_task(query, pavilion_id: int, task_id: int, context: ContextTypes.DEFAULT_TYPE):
@@ -1979,7 +2038,8 @@ async def show_skating_set_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_handwarmers_sequence(query, step: int):
@@ -2011,7 +2071,8 @@ async def show_handwarmers_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_outfit_sequence(query, step: int):
@@ -2059,7 +2120,8 @@ async def show_outfit_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_accessories_sequence(query, step: int):
@@ -2093,7 +2155,8 @@ async def show_accessories_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_icecream_sequence_continue(query, step: int):
@@ -2119,7 +2182,8 @@ async def show_icecream_sequence_continue(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_garland_unwind_sequence(query, step: int):
@@ -2155,7 +2219,8 @@ async def show_garland_unwind_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_mandarin_vase_sequence(query, step: int):
@@ -2191,7 +2256,8 @@ async def show_mandarin_vase_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_candles_light_sequence(query, step: int):
@@ -2227,7 +2293,8 @@ async def show_candles_light_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_candy_mix_sequence(query, step: int):
@@ -2274,7 +2341,8 @@ async def show_candy_mix_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_moscow_set_sequence(query, step: int):
@@ -2325,7 +2393,8 @@ async def show_moscow_set_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_tea_pour_sequence(query, step: int):
@@ -2361,7 +2430,8 @@ async def show_tea_pour_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_sugar_stir_sequence(query, step: int):
@@ -2397,7 +2467,8 @@ async def show_sugar_stir_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_gift_wrap_sequence(query, step: int):
@@ -2482,7 +2553,8 @@ async def show_gift_wrap_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_smooth_folds_sequence(query, step: int):
@@ -2518,7 +2590,8 @@ async def show_smooth_folds_sequence(query, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 
 async def show_generic_sequence_task(query, task, step: int):
@@ -2534,6 +2607,7 @@ async def show_generic_sequence_task(query, task, step: int):
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
 

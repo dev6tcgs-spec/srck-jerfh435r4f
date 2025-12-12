@@ -29,6 +29,32 @@ async def init():
     await database.init_db()
     await game_data.load_game_data()
 
+# Вспомогательные функции для визуализации
+def create_progress_bar(current: int, total: int, length: int = 10) -> str:
+    """Создать визуальный прогресс-бар"""
+    filled = int((current / total) * length) if total > 0 else 0
+    filled = min(filled, length)
+    bar = "█" * filled + "░" * (length - filled)
+    percent = int((current / total) * 100) if total > 0 else 0
+    return f"{bar} {percent}%"
+
+def get_emoji_animation(step: int) -> str:
+    """Получить анимированный эмодзи для эффектов"""
+    animations = {
+        "sparkles": ["✨", "⭐", "💫", "✨"],
+        "coins": ["🍊", "💰", "💎", "🍊"],
+        "success": ["✅", "🎉", "🌟", "✅"],
+        "loading": ["⏳", "⏰", "⏳", "⏰"]
+    }
+    # Простая анимация через шаги
+    return animations.get("sparkles", ["✨"])[step % len(animations.get("sparkles", ["✨"]))]
+
+def format_coins(amount: int) -> str:
+    """Форматировать количество мандаринок"""
+    if amount >= 1000:
+        return f"{amount/1000:.1f}K🍊"
+    return f"{amount}🍊"
+
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /start"""
     try:
@@ -39,21 +65,32 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         log_info(f"User {user_id} started bot")
         await database.get_user(user_id)  # Создаем пользователя если его нет
         
-        text = """🎄✨ Добро пожаловать на Московскую зимнюю ярмарку! ✨🎄
+        text = """🎄✨ *Добро пожаловать на Московскую зимнюю ярмарку!* ✨🎄
 
-Ты — организатор самой волшебной ярмарки Москвы! 
+━━━━━━━━━━━━━━━━━━━━
 
-Открывай павильоны, обслуживай гостей, зарабатывай мандаринки и узнавай интересные факты о Москве! ❄️
+🌟 Ты — организатор самой волшебной ярмарки Москвы!
 
-Твой стартовый капитал: 🍊 50 мандаринок
+✨ *Что тебя ждёт:*
+   🎪 Открывай павильоны
+   👥 Обслуживай гостей
+   💰 Зарабатывай мандаринки
+   📚 Узнавай интересные факты о Москве
 
-Начнём?"""
+━━━━━━━━━━━━━━━━━━━━
+
+💰 *Твой стартовый капитал:* 🍊 50 мандаринок
+
+━━━━━━━━━━━━━━━━━━━━
+
+✨ *Готов начать?*"""
         
         keyboard = [[InlineKeyboardButton("🎪 Открыть ярмарку", callback_data="menu")]]
         
         await update.message.reply_text(
             text=text,
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode='Markdown'
         )
     except Exception as e:
         log_error(e, "start_command")
@@ -90,12 +127,25 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             collected_facts = await database.get_collected_facts(user_id)
             facts_count = len(collected_facts)
             
-            text = f"""🎄 Московская зимняя ярмарка
+            # Прогресс-бары
+            pavilions_progress = create_progress_bar(open_count, 7)
+            facts_progress = create_progress_bar(facts_count, 75)
+            
+            text = f"""🎄✨ *Московская зимняя ярмарка* ✨🎄
 
-У тебя: 🍊 {user_coins} мандаринок
+💰 *Твой капитал:* {format_coins(user_coins)}
 
-Павильонов открыто: {open_count}/7
-Фактов собрано: {facts_count}/75"""
+━━━━━━━━━━━━━━━━━━━━
+
+🎪 *Павильоны:* {open_count}/7
+{pavilions_progress}
+
+📚 *Факты:* {facts_count}/75
+{facts_progress}
+
+━━━━━━━━━━━━━━━━━━━━
+
+✨ *Что дальше?*"""
             
             keyboard = [
                 [InlineKeyboardButton("🗺 Карта ярмарки", callback_data="map")],
@@ -104,7 +154,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # КАРТА ЯРМАРКИ
@@ -114,11 +165,19 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pavilions = await database.get_all_pavilions()
             user_pavilions = await database.get_open_pavilions(user_id)
             
-            text = f"""🗺 Карта Московской зимней ярмарки
+            text = f"""🗺 *Карта Московской зимней ярмарки* 🗺
 
-Снег падает на огоньки павильонов, пахнет глинтвейном и мандаринами...
+❄️ Снег падает на огоньки павильонов...
+☕ Пахнет глинтвейном и мандаринами...
+🎄 В воздухе витает предновогоднее волшебство...
 
-У тебя: 🍊 {user_coins}"""
+━━━━━━━━━━━━━━━━━━━━
+
+💰 *У тебя:* {format_coins(user_coins)}
+
+━━━━━━━━━━━━━━━━━━━━
+
+📍 *Выбери павильон:*"""
             
             keyboard = []
             for pav in pavilions:
@@ -138,7 +197,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # ПРОСМОТР ЗАКРЫТОГО ПАВИЛЬОНА
@@ -148,36 +208,37 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user_id = query.from_user.id
             user_coins = await database.get_user_coins(user_id)
             
-            text = f"""{pav['emoji']} {pav['name']}
+            text = f"""{pav['emoji']} *{pav['name']}*
 
 {pav['description']}
 
-{pav['atmosphere']}
+💫 *{pav['atmosphere']}*
 
-━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
-Стоимость: {pav['price']}🍊
-У тебя: {user_coins}🍊"""
+💰 *Стоимость:* {format_coins(pav['price'])}
+🍊 *У тебя:* {format_coins(user_coins)}"""
             
             keyboard = []
             
             if user_coins >= pav['price']:
-                text += "\n\n✅ Можно открыть!"
+                text += "\n\n━━━━━━━━━━━━━━━━━━━━\n\n✅ *Можно открыть!*"
                 keyboard.append([
                     InlineKeyboardButton(
-                        f"✅ Открыть за {pav['price']}🍊",
+                        f"✅ Открыть за {format_coins(pav['price'])}",
                         callback_data=f"pav_buy:{pav_id}"
                     )
                 ])
             else:
                 needed = pav['price'] - user_coins
-                text += f"\n\n❌ Не хватает {needed}🍊\n\n💡 Выполняй задания, чтобы заработать!"
+                text += f"\n\n━━━━━━━━━━━━━━━━━━━━\n\n❌ *Не хватает:* {format_coins(needed)}\n\n💡 Выполняй задания, чтобы заработать!"
             
             keyboard.append([InlineKeyboardButton("⬅️ Назад на карту", callback_data="map")])
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # ПОКУПКА ПАВИЛЬОНА
@@ -207,13 +268,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             new_coins = await database.get_user_coins(user_id)
             
-            text = f"""🎉 Павильон открыт!
+            text = f"""🎉✨ *ПАВИЛЬОН ОТКРЫТ!* ✨🎉
 
-{pav['emoji']} {pav['name']}
+{pav['emoji']} *{pav['name']}*
 
-Теперь ты можешь обслуживать гостей и зарабатывать мандаринки!
+━━━━━━━━━━━━━━━━━━━━
 
-У тебя осталось: 🍊 {new_coins}"""
+🎊 Поздравляем! Теперь ты можешь:
+   👥 Обслуживать гостей
+   💰 Зарабатывать мандаринки
+   📚 Собирать интересные факты
+
+━━━━━━━━━━━━━━━━━━━━
+
+💰 *Осталось:* {format_coins(new_coins)}"""
             
             keyboard = [
                 [InlineKeyboardButton(f"{pav['emoji']} Войти в павильон", callback_data=f"pav_enter:{pav_id}")],
@@ -222,7 +290,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # ВХОД В ПАВИЛЬОН
@@ -243,19 +312,23 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user_id = query.from_user.id
             user_coins = await database.get_user_coins(user_id)
             
-            text = f"""{pav['emoji']} {pav['name']}
+            text = f"""{pav['emoji']} *{pav['name']}*
 📍 {pav['location']}
 
-{pav['atmosphere']}
+━━━━━━━━━━━━━━━━━━━━
+
+💫 *{pav['atmosphere']}*
 
 {pav['description']}
 
-━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
-💰 +{pav['reward']}🍊 за задание
-🍊 У тебя: {user_coins}
+💰 *Награда:* +{format_coins(pav['reward'])} за задание
+🍊 *У тебя:* {format_coins(user_coins)}
 
-Чем займёшься?"""
+━━━━━━━━━━━━━━━━━━━━
+
+✨ *Чем займёшься?*"""
             
             keyboard = []
             for task in tasks:
@@ -270,7 +343,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # НАЧАЛО ЗАДАНИЯ
@@ -321,7 +395,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 return
             
             if tasks_handler.task_states[state_key].get("ready"):
-                # Успех!
+                # Успех! Показываем анимацию
+                await query.answer("🎉 Отлично!", show_alert=False)
+                # Небольшая задержка для эффекта
+                await asyncio.sleep(0.3)
                 await complete_task(query, task_id)
             else:
                 # Провал - слишком рано или поздно
@@ -329,11 +406,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 # Возвращаем в павильон
                 pav_id = tasks_handler.task_states[state_key].get("pavilion_id", 1)
                 await query.edit_message_text(
-                    text="❌ Упс... Время не то!\n\nПопробуй ещё раз!",
+                    text="❌ *Упс... Время не то!*\n\n━━━━━━━━━━━━━━━━━━━━\n\n💡 *Попробуй ещё раз!*\n\n⏰ *Следи за таймером внимательнее!*\n\n💪 *Не сдавайся!*",
                     reply_markup=InlineKeyboardMarkup([[
                         InlineKeyboardButton("🔄 Попробовать снова", callback_data=f"task_start:{pav_id}:{task_id}"),
                         InlineKeyboardButton("⬅️ Назад", callback_data=f"pav_enter:{pav_id}")
-                    ]])
+                    ]]),
+                    parse_mode='Markdown'
                 )
         
         # ВЫБОР В ЗАДАНИИ
@@ -351,12 +429,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # Обработка специфичных заданий
             if task_id == 1:  # Подобрать варежки
                 if choice == "red":
+                    await query.answer("✅ Отлично! Красные варежки!", show_alert=False)
+                    await asyncio.sleep(0.3)
                     await complete_task(query, task_id)
                 else:
                     await query.answer("❌ Не тот цвет! Попробуй ещё раз.", show_alert=True)
             
             elif task_id == 4:  # Найти нужный размер
                 if choice == "M":
+                    await query.answer("✅ Идеальный размер!", show_alert=False)
+                    await asyncio.sleep(0.3)
                     await complete_task(query, task_id)
                 else:
                     await query.answer("❌ Не тот размер! Попробуй ещё раз.", show_alert=True)
@@ -619,15 +701,17 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             user_coins = await database.get_user_coins(user_id)
             
-            text = f"""❄️ Интересный факт
+            text = f"""❄️✨ *Интересный факт* ✨❄️
 
-"{fact['text']}"
+━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━
+💡 *"{fact['text']}"*
 
-☕️ Факт сохранён в коллекцию!
+━━━━━━━━━━━━━━━━━━━━
 
-🍊 У тебя: {user_coins}"""
+✅ Факт сохранён в коллекцию! 📚
+
+💰 *У тебя:* {format_coins(user_coins)}"""
             
             keyboard = [
                 [InlineKeyboardButton("➡️ Ещё задание", callback_data=f"pav_enter:{pav_id}")],
@@ -636,7 +720,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # КОЛЛЕКЦИЯ
@@ -646,12 +731,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             facts_count = len(collected_facts)
             user_coins = await database.get_user_coins(user_id)
             
-            text = f"""📖 Моя коллекция
+            facts_progress = create_progress_bar(facts_count, 75)
+            
+            text = f"""📖✨ *Моя коллекция* ✨📖
 
-Собрано фактов: {facts_count}/75
-🍊 Всего заработано: {user_coins}
+━━━━━━━━━━━━━━━━━━━━
 
-Что посмотрим?"""
+📚 *Фактов собрано:* {facts_count}/75
+{facts_progress}
+
+💰 *Всего заработано:* {format_coins(user_coins)}
+
+━━━━━━━━━━━━━━━━━━━━
+
+✨ *Что посмотрим?*"""
             
             keyboard = [
                 [InlineKeyboardButton("📚 Факты по павильонам", callback_data="facts_menu")],
@@ -661,7 +754,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # МЕНЮ ФАКТОВ
@@ -670,9 +764,11 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             collected_facts = await database.get_collected_facts(user_id)
             pavilions = await database.get_all_pavilions()
             
-            text = """📚 Собранные факты
+            text = """📚✨ *Собранные факты* ✨📚
 
-Выбери павильон:"""
+━━━━━━━━━━━━━━━━━━━━
+
+📍 *Выбери павильон:*"""
             
             keyboard = []
             for pav in pavilions:
@@ -693,7 +789,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # ФАКТЫ ПАВИЛЬОНА
@@ -711,28 +808,42 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             count = len(collected_pav_facts)
             total = len(pav_facts)
             
-            if count == 0:
-                text = f"""📚 Факты: {pav['emoji']} {pav['name']}
+                facts_progress = create_progress_bar(count, total)
+                
+                if count == 0:
+                    text = f"""📚 *Факты:* {pav['emoji']} {pav['name']}
 
-Собрано: {count}/{total}
+━━━━━━━━━━━━━━━━━━━━
 
-Пока нет собранных фактов. Выполняй задания в этом павильоне!"""
-            else:
-                text = f"""📚 Факты: {pav['emoji']} {pav['name']}
+📊 *Собрано:* {count}/{total}
+{facts_progress}
 
-Собрано: {count}/{total} {'✅' if count == total else ''}
+━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━
+💡 Пока нет собранных фактов.
+✨ Выполняй задания в этом павильоне!"""
+                else:
+                    text = f"""📚 *Факты:* {pav['emoji']} {pav['name']}
+
+━━━━━━━━━━━━━━━━━━━━
+
+📊 *Собрано:* {count}/{total} {'✅' if count == total else '📝'}
+{facts_progress}
+
+━━━━━━━━━━━━━━━━━━━━
 
 """
-                for fact in collected_pav_facts:
-                    text += f'"{fact["text"]}"\n\n━━━━━━━━━━━━━━━━\n\n'
+                    for i, fact in enumerate(collected_pav_facts, 1):
+                        text += f"💡 *Факт {i}:*\n\"{fact['text']}\"\n\n"
+                        if i < len(collected_pav_facts):
+                            text += "━━━━━━━━━━━━━━━━━━━━\n\n"
             
             keyboard = [[InlineKeyboardButton("⬅️ К павильонам", callback_data="facts_menu")]]
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
         
         # СТАТИСТИКА
@@ -741,22 +852,34 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             stats = await database.get_user_stats(user_id)
             open_pavilions = await database.get_open_pavilions(user_id)
             
-            text = f"""📊 Твоя статистика
+            pavilions_progress = create_progress_bar(stats['pavilions_open'], 7)
+            facts_progress = create_progress_bar(stats['facts_collected'], 75)
+            
+            text = f"""📊✨ *Твоя статистика* ✨📊
 
-💰 Всего заработано: {stats['coins_earned']}🍊
-👥 Посетителей обслужено: {stats['guests_served']}
-🎪 Павильонов открыто: {stats['pavilions_open']}/7
-📚 Фактов собрано: {stats['facts_collected']}/75
+━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━
+💰 *Всего заработано:* {format_coins(stats['coins_earned'])}
+👥 *Посетителей обслужено:* {stats['guests_served']}
 
-🔥 Заданий выполнено: {stats['tasks_completed']}"""
+━━━━━━━━━━━━━━━━━━━━
+
+🎪 *Павильонов открыто:* {stats['pavilions_open']}/7
+{pavilions_progress}
+
+📚 *Фактов собрано:* {stats['facts_collected']}/75
+{facts_progress}
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔥 *Заданий выполнено:* {stats['tasks_completed']}"""
             
             keyboard = [[InlineKeyboardButton("⬅️ Назад", callback_data="collection")]]
             
             await query.edit_message_text(
                 text=text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown'
             )
     except Exception as e:
         log_error(e, f"button_handler action={action}")
@@ -800,18 +923,27 @@ async def complete_task(query, task_id: int):
     
     success_msg = success_messages.get(task_id, f"✅ Отлично! {task['name']} выполнено!")
     
-    text = f"""✅ {success_msg}
+    # Анимация успеха
+    success_emojis = ["🎉", "✨", "🌟", "💫", "⭐"]
+    success_emoji = success_emojis[task_id % len(success_emojis)]
+    
+    text = f"""{success_emoji} *{success_msg}* {success_emoji}
 
-━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━
 
-💰 +{pav['reward']}🍊
-🍊 Всего: {new_coins}"""
+💰 *Награда:* +{format_coins(pav['reward'])}
+🍊 *Всего:* {format_coins(new_coins)}
+
+━━━━━━━━━━━━━━━━━━━━
+
+📚 *Хочешь узнать интересный факт?*"""
     
     keyboard = [[InlineKeyboardButton("📚 Узнать факт", callback_data=f"fact:{pav['id']}:{task_id}")]]
     
     await query.edit_message_text(
         text=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
     )
     
     log_info(f"Task completed", {"user_id": user_id, "task_id": task_id, "reward": pav['reward']})
