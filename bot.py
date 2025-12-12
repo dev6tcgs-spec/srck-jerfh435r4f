@@ -5,6 +5,7 @@ import json
 import sys
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.error import BadRequest, NetworkError, TimedOut, RetryAfter
 from config import get_bot_token
 import database
 import game_data
@@ -92,6 +93,16 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode='Markdown'
         )
+    except BadRequest as e:
+        # Если Markdown не работает, пробуем без него
+        log_warning(f"Markdown error in start_command, trying without", {"error": str(e)})
+        try:
+            await update.message.reply_text(
+                text=text.replace('*', '').replace('_', ''),
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        except Exception as e2:
+            log_error(e2, "start_command fallback")
     except Exception as e:
         log_error(e, "start_command")
 
@@ -881,7 +892,29 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_markup=InlineKeyboardMarkup(keyboard),
                 parse_mode='Markdown'
             )
+    except BadRequest as e:
+        # Ошибка редактирования сообщения (например, сообщение не изменилось)
+        log_error(e, f"button_handler BadRequest action={action}")
+        try:
+            await query.answer("⚠️ Сообщение уже обновлено", show_alert=False)
+        except:
+            pass
+    except RetryAfter as e:
+        # Превышен лимит запросов
+        log_error(e, f"button_handler RetryAfter action={action}")
+        try:
+            await query.answer(f"⏳ Слишком много запросов. Подожди {e.retry_after} сек.", show_alert=True)
+        except:
+            pass
+    except (NetworkError, TimedOut) as e:
+        # Проблемы с сетью
+        log_error(e, f"button_handler NetworkError action={action}")
+        try:
+            await query.answer("🌐 Проблемы с сетью. Попробуй позже.", show_alert=True)
+        except:
+            pass
     except Exception as e:
+        # Другие ошибки
         log_error(e, f"button_handler action={action}")
         try:
             await query.answer("❌ Произошла ошибка. Попробуйте позже.", show_alert=True)
