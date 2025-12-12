@@ -79,33 +79,33 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         # ГЛАВНОЕ МЕНЮ
         if action == "menu":
-        user_id = query.from_user.id
-        user_coins = await database.get_user_coins(user_id)
-        open_pavilions = await database.get_open_pavilions(user_id)
+            user_id = query.from_user.id
+            user_coins = await database.get_user_coins(user_id)
+            open_pavilions = await database.get_open_pavilions(user_id)
         if 1 not in open_pavilions:  # Автоматически открываем первый павильон
             await database.open_pavilion(user_id, 1)
             open_pavilions = await database.get_open_pavilions(user_id)
-        open_count = len(open_pavilions)
-        
-        collected_facts = await database.get_collected_facts(user_id)
-        facts_count = len(collected_facts)
-        
-        text = f"""🎄 Московская зимняя ярмарка
+            open_count = len(open_pavilions)
+            
+            collected_facts = await database.get_collected_facts(user_id)
+            facts_count = len(collected_facts)
+            
+            text = f"""🎄 Московская зимняя ярмарка
 
 У тебя: 🍊 {user_coins} мандаринок
 
 Павильонов открыто: {open_count}/7
 Фактов собрано: {facts_count}/75"""
-        
-        keyboard = [
-            [InlineKeyboardButton("🗺 Карта ярмарки", callback_data="map")],
-            [InlineKeyboardButton("📖 Моя коллекция", callback_data="collection")]
-        ]
-        
-        await query.edit_message_text(
-            text=text,
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+            
+            keyboard = [
+                [InlineKeyboardButton("🗺 Карта ярмарки", callback_data="map")],
+                [InlineKeyboardButton("📖 Моя коллекция", callback_data="collection")]
+            ]
+            
+            await query.edit_message_text(
+                text=text,
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
         
         # КАРТА ЯРМАРКИ
         elif action == "map":
