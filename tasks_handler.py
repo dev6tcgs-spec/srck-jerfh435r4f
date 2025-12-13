@@ -90,16 +90,13 @@ async def show_thermometer_task(query, context: ContextTypes.DEFAULT_TYPE):
     """Задание: Проверить термометр"""
     text = """🌡 *Проверить термометр*
 
-━━━━━━━━━━━━━━━━━━━━
+❄️ В павильоне прохладно
+🌡️ Термометр на стене показывает температуру
+🔥 Отопление работает, температура медленно поднимается
 
-👤 Клиент спрашивает, комфортная ли температура в павильоне.
+Дождись комфортной температуры (22°C).
 
-💡 *Следи за термометром внимательно!* 🌡️
-
-━━━━━━━━━━━━━━━━━━━━
-
-🌡 *Температура:* 15°C...
-❄️ *Холодно!*"""
+🌡️ *15°C...* ❄️"""
     
     keyboard = [[InlineKeyboardButton("⏳ Подождать...", callback_data=f"task_reaction_wait:3")]]
     
@@ -118,14 +115,12 @@ async def show_thermometer_task(query, context: ContextTypes.DEFAULT_TYPE):
     # Через 2 секунды обновляем
     await asyncio.sleep(2)
     if state_key in task_states and not task_states[state_key].get("ready", False):
-        text = """🌡 *Проверить термометр*
+            text = """🌡 *Проверить термометр*
 
-━━━━━━━━━━━━━━━━━━━━
+🔥 Теплее становится...
+🌡️ *25°C...*
 
-🌡 *Температура:* 25°C...
-😐 *Ещё прохладно...*
-
-⏳ *Подожди ещё немного...*"""
+⏳ Ждем идеальной температуры..."""
         
         keyboard = [[InlineKeyboardButton("⏳ Ещё рано...", callback_data=f"task_reaction_wait:3")]]
         
@@ -142,15 +137,10 @@ async def show_thermometer_task(query, context: ContextTypes.DEFAULT_TYPE):
         if state_key in task_states:
             text = """🌡 *Проверить термометр*
 
-━━━━━━━━━━━━━━━━━━━━
+✨ Идеальная температура!
+🌡️ *22°C* ✅
 
-🌡 *Температура:* 22°C... ✅
-
-━━━━━━━━━━━━━━━━━━━━
-
-⚡ *СЕЙЧАС!* Комфортная температура!
-
-💡 *Нажми кнопку в нужный момент!*"""
+⚡ *СЕЙЧАС!*"""
             
             keyboard = [
                 [InlineKeyboardButton("✅ НАЖАТЬ!", callback_data=f"task_reaction_hit:3")],
@@ -188,7 +178,9 @@ async def show_tea_heating_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:38"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 6, 38)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -250,7 +242,9 @@ async def show_cash_register_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:6"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 1, 6)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(1.5)
     if state_key in task_states:
@@ -310,7 +304,9 @@ async def show_espresso_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:16"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 3, 16)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -370,7 +366,9 @@ async def show_cocoa_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:17"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 3, 17)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -430,7 +428,9 @@ async def show_waffle_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:18"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 3, 18)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -490,7 +490,9 @@ async def show_milk_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:20"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 3, 20)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -550,7 +552,9 @@ async def show_garland_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:23"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 4, 23)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -610,7 +614,9 @@ async def show_snowball_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:27"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 4, 27)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -670,7 +676,9 @@ async def show_scale_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:30"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 5, 30)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(1.5)
     if state_key in task_states:
@@ -730,7 +738,9 @@ async def show_oven_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:33"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 5, 33)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -790,7 +800,9 @@ async def show_boiling_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:40"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 6, 40)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -850,7 +862,9 @@ async def show_brew_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:43"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 6, 43)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -910,7 +924,9 @@ async def show_fabric_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:10"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 2, 10)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -953,7 +969,9 @@ async def show_pack_bag_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:12"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 2, 12)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -1023,7 +1041,9 @@ async def show_tie_ribbon_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:35"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 5, 35)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -1066,7 +1086,9 @@ async def show_close_box_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:37"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 5, 37)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -1136,7 +1158,9 @@ async def show_cut_ribbon_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:52"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 7, 52)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -1179,7 +1203,9 @@ async def show_stop_conveyor_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:55"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 7, 55)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(2)
     if state_key in task_states:
@@ -1249,7 +1275,9 @@ async def show_measure_ribbon_task(query, context: ContextTypes.DEFAULT_TYPE):
     )
     
     state_key = f"{query.from_user.id}:58"
-    task_states[state_key]["start_time"] = asyncio.get_event_loop().time()
+    state = ensure_task_state(state_key, 7, 58)
+    state["start_time"] = asyncio.get_event_loop().time()
+    state["ready"] = False
     
     await asyncio.sleep(1.5)
     if state_key in task_states:
@@ -1292,13 +1320,11 @@ async def show_measure_ribbon_task(query, context: ContextTypes.DEFAULT_TYPE):
 
 async def show_generic_reaction_task(query, task, context: ContextTypes.DEFAULT_TYPE):
     """Универсальный обработчик реакций"""
-    text = f"""{task['emoji']} {task['name']}
+    text = f"""{task['emoji']} *{task['name']}*
 
-Выполняй задание и нажимай в нужный момент!
+⏳ Следи за процессом...
 
-━━━━━━━━━━━━━━━━
-
-Готово..."""
+🎯 *Нажми в нужный момент*"""
     
     keyboard = [
         [InlineKeyboardButton("✅ НАЖАТЬ!", callback_data=f"task_reaction_hit:{task['id']}")],
@@ -1373,11 +1399,15 @@ async def start_choice_task(query, pavilion_id: int, task_id: int, context: Cont
 
 async def show_gloves_choice(query):
     """Подобрать варежки"""
-    text = """🧤 Подобрать варежки
+    text = """🧤 *Подобрать варежки*
 
-Клиент показывает цвет: красный
+❄️ Снег падает за окном павильона...
+🕯️ Теплый свет ламп освещает полки с варежками
 
-Выбери подходящие варежки!"""
+На полке разложены варежки разных цветов.
+Клиент указывает на красные — нужно найти подходящие.
+
+🎯 *Выбери цвет:*"""
     
     keyboard = [
         [
@@ -1399,11 +1429,14 @@ async def show_gloves_choice(query):
 
 async def show_size_choice(query):
     """Найти нужный размер"""
-    text = """🧣 Найти нужный размер
+    text = """🧣 *Найти нужный размер*
 
-Клиент говорит: размер M
+🌨️ За окном метель, в павильоне тепло и уютно
+📦 На полке аккуратно разложены шарфы с бирками
 
-Выбери из полки!"""
+Нужен размер M — средний, самый популярный.
+
+🎯 *Выбери размер:*"""
     
     keyboard = [
         [
@@ -1425,13 +1458,15 @@ async def show_size_choice(query):
 
 async def show_icecream_choice(query):
     """Собрать порцию мороженого - шаг 1"""
-    text = """🍦 Собрать порцию мороженого
+    text = """🍦 *Собрать порцию мороженого*
 
-Девочка заказала мороженое в вафельном рожке!
+🧊 Холодный воздух из витрины с мороженым
+🍦 Вафельные рожки лежат стопкой
+✨ Блестит мороженое в металлических контейнерах
 
-━━━━━━━━━━━━━━━━
+Выбери сорт для порции в рожке.
 
-ШАГ 1: Выбери сорт"""
+🎯 *Сорт:*"""
     
     keyboard = [
         [
@@ -1663,9 +1698,15 @@ async def show_tea_jam_choice(query):
 
 async def show_rare_tea_choice(query):
     """Найти редкий сорт"""
-    text = """🔍 Найти редкий сорт
+    text = """🔍 *Найти редкий сорт*
 
-Листай полку, найди 'Московский вечер'!"""
+🫖 Полки уставлены банками с чаем
+📜 Этикетки с названиями: "Классический", "Иван-чай", "Смородиновый"...
+🔎 Нужно найти "Московский вечер" — редкий сорт
+
+Листай полку и ищи нужную банку.
+
+🎯 *Поиск:*"""
     
     keyboard = [
         [
@@ -1733,9 +1774,15 @@ async def show_wish_choice(query):
 
 async def show_decor_choice(query):
     """Украсить декором"""
-    text = """🎨 Украсить декором
+    text = """🎨 *Украсить декором*
 
-Выбери 2 элемента декора!"""
+🎁 Подарок лежит на столе
+✨ Коробка с декоративными элементами: шишки, бусины, колокольчики, звезды
+🌟 Нужно выбрать 2 элемента для финального штриха
+
+Выбери 2 декоративных элемента.
+
+🎯 *Декор (2 элемента):*"""
     
     state_key = f"{query.from_user.id}:54"
     if state_key not in task_states:
@@ -1817,11 +1864,13 @@ async def show_final_touch_choice(query):
 
 async def show_sweaters_choice(query):
     """Листать свитера"""
-    text = """🧥 Листать свитера
+    text = """🧥 *Листать свитера*
 
-Клиент описывает: 'С оленями, синий'
+🎨 На вешалке висят свитера разных цветов и узоров
+🦌 Нужен синий с оленями — классический зимний узор
+👀 Листай вешалку и ищи нужный
 
-Листай вешалку, найди нужный!"""
+🎯 *Поиск:*"""
     
     keyboard = [
         [
@@ -1891,11 +1940,15 @@ async def show_hat_choice(query):
 
 async def show_color_scheme_choice(query):
     """Выбрать цветовую гамму"""
-    text = """🎨 Выбрать цветовую гамму
+    text = """🎨 *Выбрать цветовую гамму*
 
-Клиент: 'Всё в серых тонах'
+🎭 Зеркала отражают мягкий свет
+🧵 На манекенах — серые тона, от светлого до угольного
+✨ Нужно собрать комплект: 3 вещи в серой гамме
 
-Выбери 3 вещи в серых тонах!"""
+Выбери 3 предмета, которые сочетаются.
+
+🎯 *Выбери 3 вещи:*"""
     
     state_key = f"{query.from_user.id}:14"
     if state_key not in task_states:
@@ -1931,9 +1984,9 @@ async def show_color_scheme_choice(query):
 
 async def show_generic_choice_task(query, task):
     """Универсальный обработчик выбора"""
-    text = f"""{task['emoji']} {task['name']}
+    text = f"""{task['emoji']} *{task['name']}*
 
-Выбери вариант!"""
+🎯 *Выбери вариант:*"""
     
     keyboard = [
         [
@@ -2008,11 +2061,11 @@ async def show_skating_set_sequence(query, step: int):
             [InlineKeyboardButton("❌ Отменить", callback_data=f"task_cancel:2")]
         ]
     elif step == 2:
-        text = """✅ Шапка выбрана!
+        text = """✅ Шапка выбрана
 
-━━━━━━━━━━━━━━━━
+*Шаг 2/3:* Выбери шарф
 
-ШАГ 2/3: Выбери шарф"""
+🎯 *Шарф:*"""
         
         keyboard = [
             [
@@ -2022,11 +2075,11 @@ async def show_skating_set_sequence(query, step: int):
             [InlineKeyboardButton("❌ Отменить", callback_data=f"task_cancel:2")]
         ]
     elif step == 3:
-        text = """✅ Шарф выбран!
+        text = """✅ Шарф выбран
 
-━━━━━━━━━━━━━━━━
+*Шаг 3/3:* Выбери варежки
 
-ШАГ 3/3: Выбери варежки"""
+🎯 *Варежки:*"""
         
         keyboard = [
             [
@@ -2162,11 +2215,12 @@ async def show_accessories_sequence(query, step: int):
 async def show_icecream_sequence_continue(query, step: int):
     """Собрать порцию мороженого - продолжение"""
     if step == 1:
-        text = """✅ Пломбир выбран!
+        text = """✅ Пломбир выбран
 
-━━━━━━━━━━━━━━━━
+🍦 Мороженое в рожке
+✨ *Шаг 2/2:* Выбери топпинг
 
-ШАГ 2: Выбери топпинг"""
+🎯 *Топпинг:*"""
         
         keyboard = [
             [

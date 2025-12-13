@@ -407,20 +407,28 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             if tasks_handler.task_states[state_key].get("ready"):
                 # Успех! Показываем анимацию
-                await query.answer("🎉 Отлично!", show_alert=False)
+                await query.answer("🎉 Отлично! Идеальный момент!", show_alert=False)
                 # Небольшая задержка для эффекта
                 await asyncio.sleep(0.3)
                 await complete_task(query, task_id)
             else:
                 # Провал - слишком рано или поздно
-                await query.answer("❌ Слишком рано или поздно! Попробуй ещё раз.", show_alert=True)
-                # Возвращаем в павильон
                 pav_id = tasks_handler.task_states[state_key].get("pavilion_id", 1)
+                task = await database.get_task(task_id)
+                task_name = task['name'] if task else "задание"
+                
+                await query.answer("⏰ Не тот момент! Попробуй ещё раз.", show_alert=True)
+                # Возвращаем в павильон с более понятным сообщением
                 await query.edit_message_text(
-                    text="❌ *Упс... Время не то!*\n\n━━━━━━━━━━━━━━━━━━━━\n\n💡 *Попробуй ещё раз!*\n\n⏰ *Следи за таймером внимательнее!*\n\n💪 *Не сдавайся!*",
+                    text=f"""❌ *Время не то*
+
+⏰ Слишком рано или поздно
+👀 Следи внимательнее за сигналом
+
+🎯 *Попробуй снова*""",
                     reply_markup=InlineKeyboardMarkup([[
                         InlineKeyboardButton("🔄 Попробовать снова", callback_data=f"task_start:{pav_id}:{task_id}"),
-                        InlineKeyboardButton("⬅️ Назад", callback_data=f"pav_enter:{pav_id}")
+                        InlineKeyboardButton("⬅️ Назад в павильон", callback_data=f"pav_enter:{pav_id}")
                     ]]),
                     parse_mode='Markdown'
                 )
@@ -440,19 +448,19 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # Обработка специфичных заданий
             if task_id == 1:  # Подобрать варежки
                 if choice == "red":
-                    await query.answer("✅ Отлично! Красные варежки!", show_alert=False)
+                    await query.answer("✅ Идеально! Клиент доволен!", show_alert=False)
                     await asyncio.sleep(0.3)
                     await complete_task(query, task_id)
                 else:
-                    await query.answer("❌ Не тот цвет! Попробуй ещё раз.", show_alert=True)
+                    await query.answer("❌ Не тот цвет! Клиент просил красные. Попробуй ещё раз.", show_alert=True)
             
             elif task_id == 4:  # Найти нужный размер
                 if choice == "M":
-                    await query.answer("✅ Идеальный размер!", show_alert=False)
+                    await query.answer("✅ Отлично! Размер M - именно то, что нужно!", show_alert=False)
                     await asyncio.sleep(0.3)
                     await complete_task(query, task_id)
                 else:
-                    await query.answer("❌ Не тот размер! Попробуй ещё раз.", show_alert=True)
+                    await query.answer(f"❌ Не тот размер! Клиент просил размер M, а ты выбрал {choice}. Попробуй ещё раз.", show_alert=True)
             
             elif task_id == 15:  # Собрать порцию мороженого - шаг 1 (choice) переходит в sequence
                 if state_key not in tasks_handler.task_states:
