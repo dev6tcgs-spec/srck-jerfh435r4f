@@ -240,3 +240,10 @@ async def get_user_stats(user_id: int):
         'tasks_completed': user['tasks_completed']
     }
 
+async def get_all_user_ids():
+    """Получить список всех user_id из базы данных"""
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        cursor = await db.execute("SELECT user_id FROM users")
+        rows = await cursor.fetchall()
+        return [row[0] for row in rows]
+
