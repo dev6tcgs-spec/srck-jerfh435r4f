@@ -115,7 +115,7 @@ async def show_thermometer_task(query, context: ContextTypes.DEFAULT_TYPE):
     # Через 2 секунды обновляем
     await asyncio.sleep(2)
     if state_key in task_states and not task_states[state_key].get("ready", False):
-            text = """🌡 *Проверить термометр*
+        text = """🌡 *Проверить термометр*
 
 🔥 Теплее становится...
 🌡️ *25°C...*
